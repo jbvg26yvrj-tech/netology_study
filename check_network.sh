@@ -7,7 +7,7 @@ USER_SUBNET="$3"
 USER_HOST="$4"
 SUBNET_RANGE="${USER_SUBNET:-"{1..255}"}"
 HOST_RANGE="${USER_HOST:-"{1..255}"}"
-PREFIX_REGEX="^[0-9]{1,3}\.[0-9]{1,3}$"
+PREFIX_REGEX="^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?\.)(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
 SUBHOST_REGEX="^([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$"
 
 function checkuser {
@@ -17,11 +17,6 @@ function checkuser {
 	    exit 1
     fi
 }
-
-#function arping {
-#    echo "[*] IP : ${PREFIX}.${SUBNET}.${HOST}"
-#    arping -c 3 -w 1 -i "$INTERFACE" "${PREFIX}.${SUBNET}.${HOST}" 2> /dev/null
-#}
 
 function validate_input {
     value="$1"
@@ -41,7 +36,7 @@ function validate_input {
         fi
 
     # 2. Если значение установлено, но не проходит регулярку
-    elif [ -z "$value" ] && [[ "$name" != "INTERFACE" ]] && [[ ! "$value" =~ $regex ]]; then
+    elif [ -n "$value" ] && [[ "$name" != "INTERFACE" ]] && [[ ! "$value" =~ $regex ]]; then
         if [[ "$name" == "PREFIX" ]]; then
             echo "ОШИБКА ВАЛИДАЦИИ: Параметр $name должен иметь формат X.X"
             exit 1
